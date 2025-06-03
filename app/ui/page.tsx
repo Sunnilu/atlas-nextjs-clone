@@ -1,3 +1,11 @@
-export default function UserDashboard() {
-  return <h1>Welcome to the User Dashboard</h1>;
+interface TopicPageProps {
+  params: { id: string };
+}
+
+export default async function TopicDetails({ params }: TopicPageProps) {
+  return (
+    <div>
+      <h1>Topic ID: {params.id}</h1>
+    </div>
+  );
 }
