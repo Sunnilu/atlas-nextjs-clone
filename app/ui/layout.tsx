@@ -1,17 +1,17 @@
+// app/ui/layout.tsx
 import Link from 'next/link';
-import { prisma } from '@/lib/prisma'; // 
+import { getTopics } from '@/lib/db';
 
 export default async function UILayout({ children }: { children: React.ReactNode }) {
   let topics = [];
 
   try {
-    topics = await prisma.topic.findMany(); 
+    topics = await getTopics();
   } catch (error) {
-    console.warn('⚠️ Failed to fetch topics, falling back to placeholder list.');
+    console.error('⚠️ Fallback topics due to DB error:', error);
     topics = [
       { id: '1', title: 'Next.js' },
       { id: '2', title: 'React' },
-      { id: '3', title: 'PostgreSQL' },
     ];
   }
 
