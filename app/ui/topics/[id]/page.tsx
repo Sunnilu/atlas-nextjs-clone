@@ -1,40 +1,22 @@
 // app/ui/topics/[id]/page.tsx
+type Props = {
+  params: { id: string };
+};
 
-import { db } from "@vercel/postgres";
-import { notFound } from "next/navigation";
-import { Metadata } from "next";
+const mockQuestions = [
+  { id: 'q1', title: 'What is RSC?', votes: 5 },
+  { id: 'q2', title: 'How to use Prisma?', votes: 3 },
+];
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  return {
-    title: `Topic ${params.id}`,
-  };
-}
-
-export default async function TopicPage({ params }: { params: { id: string } }) {
-  const client = await db.connect();
-
-  const topicResult = await client.sql`
-    SELECT title FROM topics WHERE id = ${params.id} LIMIT 1
-  `;
-
-  if (topicResult.rows.length === 0) {
-    notFound();
-  }
-
-  const topicTitle = topicResult.rows[0].title;
-
-  const questionsResult = await client.sql`
-    SELECT id, title, votes FROM questions WHERE topic_id = ${params.id}
-  `;
-
+export default function TopicPage({ params }: Props) {
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">{topicTitle}</h1>
+      <h1 className="text-2xl font-bold mb-4">Topic ID: {params.id}</h1>
       <ul className="space-y-2">
-        {questionsResult.rows.map((q) => (
+        {mockQuestions.map((q) => (
           <li key={q.id} className="border p-2 rounded">
-            <strong>{q.title}</strong>{" "}
-            <span className="text-sm text-gray-500">(Votes: {q.votes})</span>
+            <strong>{q.title}</strong>
+            <span className="text-sm text-gray-500"> (Votes: {q.votes})</span>
           </li>
         ))}
       </ul>
