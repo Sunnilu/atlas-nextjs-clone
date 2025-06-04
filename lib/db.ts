@@ -1,3 +1,5 @@
+console.log('✅ POSTGRES_URL:', process.env.POSTGRES_URL);
+
 // lib/db.ts
 import { sql } from '@vercel/postgres';
 
