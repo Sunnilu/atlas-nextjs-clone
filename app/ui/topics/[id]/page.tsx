@@ -2,24 +2,21 @@
 
 import { db } from "@vercel/postgres";
 import { notFound } from "next/navigation";
-import type { Metadata } from "next";
-import type { FC } from "react";
+import { type Metadata } from "next";
 
-interface TopicPageProps {
+type PageProps = {
   params: {
     id: string;
   };
-}
+};
 
-// Optional metadata function
-export async function generateMetadata({ params }: TopicPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   return {
     title: `Topic ${params.id}`,
   };
 }
 
-// ✅ Make sure this is an async server component
-const TopicPage: FC<TopicPageProps> = async ({ params }) => {
+export default async function TopicDetails({ params }: PageProps) {
   const client = await db.connect();
 
   const topicResult = await client.sql`
@@ -49,6 +46,4 @@ const TopicPage: FC<TopicPageProps> = async ({ params }) => {
       </ul>
     </div>
   );
-};
-
-export default TopicPage;
+}
