@@ -1,37 +1,61 @@
 // app/ui/topics/[id]/page.tsx
-import { getTopicById, getQuestionsByTopicId } from '@/lib/db';
-import { notFound } from 'next/navigation';
-import Link from 'next/link';
+'use client';
 
-export default async function TopicDetails({ params }: { params: { id: string } }) {
-  const topic = await getTopicById(params.id);
-  if (!topic) return notFound();
+import { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
 
-  const questions = await getQuestionsByTopicId(params.id);
+interface Question {
+  id: string;
+  title: string;
+  votes: number;
+}
+
+export default function TopicDetailPage() {
+  const { id } = useParams();
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [topic, setTopic] = useState<{ title: string } | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetch(`/api/topics/${id}`);
+      const data = await res.json();
+      setTopic(data.topic);
+      setQuestions(data.questions);
+    };
+
+    fetchData();
+  }, [id]);
+
+  const handleVote = async (questionId: string) => {
+    await fetch(`/api/questions/${questionId}/vote`, { method: 'POST' });
+    setQuestions((prev) =>
+      prev.map((q) =>
+        q.id === questionId ? { ...q, votes: q.votes + 1 } : q
+      )
+    );
+  };
+
+  if (!topic) return <p>Loading topic...</p>;
 
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">{topic.title}</h1>
-      <form action={`/api/topics/${params.id}/questions`} method="POST" className="mb-6 space-x-2">
-        <input
-          name="title"
-          type="text"
-          placeholder="Ask a question..."
-          className="border p-2 w-1/2"
-          required
-        />
-        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
-          Ask
-        </button>
-      </form>
       {questions.length === 0 ? (
         <p>No questions yet.</p>
       ) : (
-        <ul className="space-y-2">
+        <ul className="space-y-4">
           {questions.map((q) => (
-            <li key={q.id} className="border p-2 rounded">
-              <strong>{q.title}</strong>
-              <span className="ml-2 text-sm text-gray-500">(Votes: {q.votes})</span>
+            <li key={q.id} className="border p-3 rounded flex justify-between items-center">
+              <div>
+                <strong>{q.title}</strong>
+                <div className="text-sm text-gray-500">Votes: {q.votes}</div>
+              </div>
+              <button
+                onClick={() => handleVote(q.id)}
+                className="bg-green-500 text-white px-3 py-1 rounded"
+              >
+                👍
+              </button>
             </li>
           ))}
         </ul>
