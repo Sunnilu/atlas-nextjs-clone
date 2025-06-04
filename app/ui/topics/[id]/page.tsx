@@ -1,22 +1,26 @@
-import { prisma } from '@/lib/prisma';
+// app/ui/topics/[id]/page.tsx
+import { sql } from '@/lib/db';
 import { notFound } from 'next/navigation';
-import { Topic, Question } from '@prisma/client';
 
 export default async function TopicDetails({ params }: { params: { id: string } }) {
-  let topic: Topic | null = null;
-  let questions: Question[] = [];
+  let topic;
+  let questions = [];
 
   try {
-    topic = await prisma.topic.findUnique({ where: { id: params.id } });
+    const topicResult = await sql`
+      SELECT * FROM topics WHERE id = ${params.id} LIMIT 1
+    `;
+    if (topicResult.rows.length === 0) return notFound();
 
-    if (!topic) return notFound();
+    topic = topicResult.rows[0];
 
-    questions = await prisma.question.findMany({
-      where: { topicId: params.id },
-      orderBy: { votes: 'desc' }
-    });
+    const questionsResult = await sql`
+      SELECT id, title, votes FROM questions WHERE topic_id = ${params.id}
+      ORDER BY votes DESC
+    `;
+    questions = questionsResult.rows;
   } catch (error) {
-    console.error('Error fetching topic/questions:', error);
+    console.error('❌ Error fetching topic or questions:', error);
     return notFound();
   }
 
