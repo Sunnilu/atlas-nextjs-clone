@@ -2,21 +2,23 @@
 
 import { db } from "@vercel/postgres";
 import { notFound } from "next/navigation";
-import { type Metadata } from "next";
+import { Metadata } from "next";
 
-type PageProps = {
-  params: {
-    id: string;
-  };
-};
+interface Params {
+  id: string;
+}
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+interface Props {
+  params: Params;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `Topic ${params.id}`,
   };
 }
 
-export default async function TopicDetails({ params }: PageProps) {
+export default async function TopicPage({ params }: Props) {
   const client = await db.connect();
 
   const topicResult = await client.sql`
