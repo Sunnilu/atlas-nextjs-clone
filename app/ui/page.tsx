@@ -1,28 +1,25 @@
 // app/ui/page.tsx
+const mockTopics = [
+  { id: '1', title: 'Next.js' },
+  { id: '2', title: 'React' },
+  { id: '3', title: 'PostgreSQL' },
+];
 
-import Link from "next/link";
-import { db } from "@vercel/postgres";
-
-export default async function UIPage() {
-  const client = await db.connect();
-
-  const topicsResult = await client.sql`
-    SELECT id, title FROM topics
-  `;
-
+export default function UIPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Topics</h1>
       <ul className="space-y-2">
-        {topicsResult.rows.map((topic) => (
+        {mockTopics.map((topic) => (
           <li key={topic.id}>
-            <Link href={`/ui/topics/${topic.id}`} className="text-blue-600 underline">
+            <a href={`/ui/topics/${topic.id}`} className="text-blue-600 hover:underline">
               {topic.title}
-            </Link>
+            </a>
           </li>
         ))}
       </ul>
     </div>
   );
 }
+
 
