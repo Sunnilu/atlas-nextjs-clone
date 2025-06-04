@@ -1,28 +1,12 @@
 // app/ui/topics/[id]/page.tsx
-import { sql } from '@/lib/db';
+import { getTopicById, getQuestionsByTopicId } from '@/lib/db';
 import { notFound } from 'next/navigation';
 
 export default async function TopicDetails({ params }: { params: { id: string } }) {
-  let topic;
-  let questions = [];
+  const topic = await getTopicById(params.id);
+  if (!topic) return notFound();
 
-  try {
-    const topicResult = await sql`
-      SELECT * FROM topics WHERE id = ${params.id} LIMIT 1
-    `;
-    if (topicResult.rows.length === 0) return notFound();
-
-    topic = topicResult.rows[0];
-
-    const questionsResult = await sql`
-      SELECT id, title, votes FROM questions WHERE topic_id = ${params.id}
-      ORDER BY votes DESC
-    `;
-    questions = questionsResult.rows;
-  } catch (error) {
-    console.error('❌ Error fetching topic or questions:', error);
-    return notFound();
-  }
+  const questions = await getQuestionsByTopicId(params.id);
 
   return (
     <div>
