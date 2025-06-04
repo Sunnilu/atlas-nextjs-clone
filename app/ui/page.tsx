@@ -1,25 +1,32 @@
-// app/ui/page.tsx
-const mockTopics = [
-  { id: '1', title: 'Next.js' },
-  { id: '2', title: 'React' },
-  { id: '3', title: 'PostgreSQL' },
-];
+import Link from 'next/link';
+import { prisma } from '@/lib/prisma';
 
-export default function UIPage() {
+export default async function TopicListPage() {
+  let topics = [];
+
+  try {
+    topics = await prisma.topic.findMany();
+  } catch {
+    topics = [
+      { id: '1', title: 'Next.js' },
+      { id: '2', title: 'React' },
+      { id: '3', title: 'PostgreSQL' },
+    ];
+  }
+
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Topics</h1>
-      <ul className="space-y-2">
-        {mockTopics.map((topic) => (
+      <h1 className="text-2xl font-bold mb-4">All Topics</h1>
+      <ul className="space-y-4">
+        {topics.map((topic) => (
           <li key={topic.id}>
-            <a href={`/ui/topics/${topic.id}`} className="text-blue-600 hover:underline">
+            <Link href={`/ui/topics/${topic.id}`} className="block p-4 border rounded hover:bg-gray-50">
               {topic.title}
-            </a>
+            </Link>
           </li>
         ))}
       </ul>
     </div>
   );
 }
-
 
