@@ -1,11 +1,11 @@
 import Link from 'next/link';
-import { prisma } from '@/lib/prisma'; // Swap this later if needed
+import { prisma } from '@/lib/prisma'; // 
 
 export default async function UILayout({ children }: { children: React.ReactNode }) {
   let topics = [];
 
   try {
-    topics = await prisma.topic.findMany(); // ✅ replace with mock data if needed
+    topics = await prisma.topic.findMany(); 
   } catch (error) {
     console.warn('⚠️ Failed to fetch topics, falling back to placeholder list.');
     topics = [
