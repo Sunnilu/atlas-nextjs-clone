@@ -3,8 +3,15 @@ import Link from 'next/link';
 import { ReactNode } from 'react';
 import { getTopics } from '@/lib/db';
 
-export default async function UILayout({ children }: { children: ReactNode }) {
-  const topics = await getTopics();
+export default async function UILayout({ children }: { children: React.ReactNode }) {
+  let topics: { id: string; title: string }[] = [];
+
+  try {
+    topics = await getTopics();
+  } catch (error) {
+    console.error('❌ Failed to load topics from database:', error);
+    // Fallback UI could be added here if needed
+  }
 
   return (
     <div className="flex min-h-screen">
@@ -13,15 +20,25 @@ export default async function UILayout({ children }: { children: ReactNode }) {
         <ul className="space-y-2">
           {topics.map((topic) => (
             <li key={topic.id}>
-              <Link href={`/ui/topics/${topic.id}`} className="text-blue-600 hover:underline">
+              <Link
+                href={`/ui/topics/${topic.id}`}
+                className="text-blue-600 hover:underline"
+              >
                 {topic.title}
               </Link>
             </li>
           ))}
         </ul>
         <div className="mt-6 space-y-2">
-          <Link href="/ui" className="block text-sm text-gray-700 hover:underline">🏠 Dashboard</Link>
-          <Link href="/ui/topics/new" className="block text-sm text-gray-700 hover:underline">➕ New Topic</Link>
+          <Link href="/ui" className="block text-sm text-gray-700 hover:underline">
+            🏠 Dashboard
+          </Link>
+          <Link
+            href="/ui/topics/new"
+            className="block text-sm text-gray-700 hover:underline"
+          >
+            ➕ New Topic
+          </Link>
         </div>
       </aside>
       <main className="flex-1 p-6">{children}</main>
