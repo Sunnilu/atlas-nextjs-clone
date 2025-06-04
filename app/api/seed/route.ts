@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
-import { prisma } from "@/lib/prisma"; // Adjust path if needed
+import { prisma } from "@/lib/prisma"; // Ensure this file exists and exports the Prisma client
 
 async function clearData() {
   await prisma.answer.deleteMany();
