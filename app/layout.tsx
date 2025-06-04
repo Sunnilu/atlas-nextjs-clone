@@ -7,7 +7,10 @@ export default async function UILayout({ children }: { children: React.ReactNode
   let topics: { id: string; title: string }[] = [];
 
   try {
-    topics = await getTopics();
+    topics = (await getTopics()).map((row: any) => ({
+      id: String(row.id),
+      title: String(row.title),
+    }));
   } catch (error) {
     console.error('❌ Failed to load topics from database:', error);
     // Fallback UI could be added here if needed
