@@ -1,29 +1,49 @@
-// app/ui/topics/[id]/page.tsx
-import { getTopicById, getQuestionsByTopicId } from '@/lib/db';
-import { notFound } from 'next/navigation';
+'use client';
 
-export default async function TopicDetails({ params }: { params: { id: string } }) {
-  const topic = await getTopicById(params.id);
-  if (!topic) return notFound();
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
-  const questions = await getQuestionsByTopicId(params.id);
+export default function NewTopicPage() {
+  const [title, setTitle] = useState('');
+  const [error, setError] = useState('');
+  const router = useRouter();
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    if (!title.trim()) {
+      setError('Title is required');
+      return;
+    }
+
+    const res = await fetch('/api/topics', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      setError(data.error || 'Something went wrong');
+    } else {
+      router.push('/ui'); // Go back to the topics list
+    }
+  }
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">{topic.title}</h1>
-      {questions.length === 0 ? (
-        <p>No questions yet.</p>
-      ) : (
-        <ul className="space-y-2">
-          {questions.map((q) => (
-            <li key={q.id} className="border p-2 rounded">
-              <strong>{q.title}</strong>
-              <span className="ml-2 text-sm text-gray-500">(Votes: {q.votes})</span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+    <form onSubmit={handleSubmit} className="space-y-4 p-4 max-w-md">
+      <h2 className="text-2xl font-bold">Create a New Topic</h2>
+      <input
+        type="text"
+        placeholder="Topic title"
+        className="border p-2 w-full"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+      />
+      {error && <p className="text-red-500">{error}</p>}
+      <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
+        Create
+      </button>
+    </form>
   );
 }
-
