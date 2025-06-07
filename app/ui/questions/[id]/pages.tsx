@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Check, CheckCircle } from 'lucide-react';
 import { getQuestionWithAnswers } from '@/lib/data';
-import AnswerForm from '@/components/AnswerForm';
+import AnswerForm from '../../components/AnswerForm';
 import AcceptAnswerButton from '@/components/AcceptAnswerButton';
 
 interface Props {
