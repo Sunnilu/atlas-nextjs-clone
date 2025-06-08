@@ -16,7 +16,11 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "lib/*": ["lib/*"],
+      "components/*": ["components/*"],
+      "hooks/*": ["hooks/*"],
+      "styles/*": ["styles/*"]
     },
     "plugins": [
       {
