@@ -3,8 +3,11 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Check, CheckCircle } from 'lucide-react';
 import { getQuestionWithAnswers } from '@/lib/data';
-import AnswerForm from '../../components/AnswerForm';
+import AnswerForm from '@/components/AnswerForm';
 import AcceptAnswerButton from '@/components/AcceptAnswerButton';
+// import AcceptAnswerButton from '@/components/AcceptAnswerButton';
+// Update the import path below if AcceptAnswerButton exists elsewhere:
+// import AcceptAnswerButton from '../../../../../components/AcceptAnswerButton';
 
 interface Props {
   params: { id: string };
@@ -12,7 +15,7 @@ interface Props {
 
 export default async function QuestionPage({ params }: Props) {
   const questionId = Number(params.id);
-  const question = await getQuestionWithAnswers(questionId);
+  const question = await getQuestionWithAnswers(params.id);
 
   if (!question) return notFound();
 
@@ -21,7 +24,7 @@ export default async function QuestionPage({ params }: Props) {
 
   return (
     <div className="max-w-3xl mx-auto p-8">
-      <h1 className="text-2xl font-bold mb-6">#{question.text}</h1>
+      <h1 className="text-2xl font-bold mb-6">#{question.title}</h1>
 
       <AnswerForm questionId={questionId} />
 
@@ -36,7 +39,7 @@ export default async function QuestionPage({ params }: Props) {
         {others.map((a) => (
           <div key={a.id} className="p-4 border rounded flex justify-between items-center">
             <p>{a.text}</p>
-            <AcceptAnswerButton answerId={a.id} />
+            <AcceptAnswerButton answerId={Number(a.id)} />
           </div>
         ))}
       </div>
