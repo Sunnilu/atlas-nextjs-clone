@@ -1,20 +1,18 @@
-// app/ui/page.tsx
-
 import Link from 'next/link';
-import { getTopics } from '@/lib/db';
+import { fetchTopics } from '@/lib/data';
 
 export default async function TopicsPage() {
-  const topics = await getTopics();
+  const topics = await fetchTopics();
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">All Topics</h1>
-      <ul className="space-y-2">
+    <div className="max-w-xl mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-6">Topics</h1>
+      <ul className="space-y-4">
         {topics.map((topic) => (
           <li key={topic.id}>
             <Link
               href={`/ui/topics/${topic.id}`}
-              className="text-blue-600 hover:underline"
+              className="block px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
             >
               {topic.title}
             </Link>
@@ -24,3 +22,4 @@ export default async function TopicsPage() {
     </div>
   );
 }
+
