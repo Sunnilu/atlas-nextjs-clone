@@ -1,3 +1,4 @@
+// lib/data.ts
 import { sql } from "@vercel/postgres";
 import { Question, Topic, User, Answer } from "./definitions";
 
@@ -8,6 +9,16 @@ export async function fetchUser(email: string): Promise<User | undefined> {
   } catch (error) {
     console.error("Failed to fetch user:", error);
     throw new Error("Failed to fetch user.");
+  }
+}
+
+export async function fetchUsers(): Promise<User[]> {
+  try {
+    const result = await sql<User>`SELECT * FROM users ORDER BY created_at DESC;`;
+    return result.rows;
+  } catch (error) {
+    console.error("Database Error:", error);
+    return [];
   }
 }
 
@@ -113,21 +124,5 @@ export async function acceptAnswer(answerId: string): Promise<void> {
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to accept answer.");
-  }
-}
-
-export async function getQuestionWithAnswers(id: string): Promise<(Question & { answers: Answer[] }) | null> {
-  try {
-    const question = await fetchQuestionById(id);
-    if (!question) return null;
-
-    const answers = await fetchAnswersForQuestion(id);
-    return {
-      ...question,
-      answers,
-    };
-  } catch (error) {
-    console.error("Failed to get question with answers:", error);
-    return null;
   }
 }
