@@ -1,32 +1,28 @@
+// app/ui/questions/[id]/page.tsx
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
-import { CheckCircle } from 'lucide-react';
-import { getQuestionWithAnswers } from '@/lib/data';
+import { fetchQuestionById, fetchAnswersForQuestion } from '@/lib/data';
 import AnswerForm from '@/components/AnswerForm';
 import AcceptAnswerButton from '@/components/AcceptAnswerButton';
+import { CheckCircle } from 'lucide-react';
 
 interface Props {
   params: { id: string };
 }
 
 export default async function QuestionPage({ params }: Props) {
-  const questionId = params.id; // ✅ keep it as string
-  const question = await getQuestionWithAnswers(questionId);
+  const question = await fetchQuestionById(params.id);
+  const answers = await fetchAnswersForQuestion(params.id);
 
   if (!question) return notFound();
 
-  const accepted = question.answers.find((a) => a.accepted);
-  const others = question.answers.filter((a) => !a.accepted);
+  const accepted = answers.find((a) => a.accepted);
+  const others = answers.filter((a) => !a.accepted);
 
   return (
     <div className="max-w-3xl mx-auto p-8">
-      <Link href="/ui/topics" className="text-blue-600 hover:underline mb-4 inline-block">
-        ← Back to Topics
-      </Link>
+      <h1 className="text-2xl font-bold mb-6">#{question.title}</h1>
 
-      <h1 className="text-2xl font-bold mb-6">{question.title}</h1>
-
-      <AnswerForm questionId={questionId} />
+      <AnswerForm questionId={question.id} />
 
       <div className="mt-8 space-y-4">
         {accepted && (
