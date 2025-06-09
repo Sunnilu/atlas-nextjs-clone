@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+//app/ui/topics/[id]/page.tsx
 import Link from 'next/link';
 import { fetchTopic, fetchQuestions } from '@/lib/data';
 
@@ -10,28 +10,20 @@ export default async function TopicDetailPage({ params }: Props) {
   const topic = await fetchTopic(params.id);
   const questions = await fetchQuestions(params.id);
 
-  if (!topic) return notFound();
-
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">#{topic.title}</h1>
-      
-      {questions.length === 0 ? (
-        <p className="text-gray-600">No questions yet for this topic.</p>
-      ) : (
-        <ul className="space-y-4">
-          {questions.map((question) => (
-            <li key={question.id}>
-              <Link
-                href={`/ui/questions/${question.id}`}
-                className="block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-              >
-                {question.title}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+    <div className="p-6">
+      <h1 className="text-3xl font-bold mb-4 text-white">{topic?.title}</h1>
+      <div className="space-y-4">
+        {questions.map((q) => (
+          <Link
+            key={q.id}
+            href={`/ui/questions/${q.id}`}
+            className="block bg-[#00003C] border border-black p-5 text-white rounded hover:bg-[#00004F]"
+          >
+            {q.title}
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
