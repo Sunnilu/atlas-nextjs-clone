@@ -1,4 +1,3 @@
-// lib/data.ts
 import { sql } from "@vercel/postgres";
 import { Question, Topic, User, Answer } from "./definitions";
 
@@ -72,7 +71,9 @@ export async function insertQuestion(
   try {
     const data = await sql<Question>`
       INSERT INTO questions (title, topic_id, votes)
-      VALUES (${question.title}, ${question.topic_id}, ${question.votes})`;
+      VALUES (${question.title}, ${question.topic_id}, ${question.votes})
+      RETURNING *;
+    `;
     return data.rows;
   } catch (error) {
     console.error("Database Error:", error);
@@ -84,7 +85,8 @@ export async function insertTopic(topic: Pick<Topic, "title">): Promise<Topic> {
   try {
     const data = await sql<Topic>`
       INSERT INTO topics (title)
-      VALUES (${topic.title}) RETURNING id, title;`;
+      VALUES (${topic.title}) RETURNING id, title;
+    `;
     return data.rows[0];
   } catch (error) {
     console.error("Database Error:", error);
@@ -95,10 +97,21 @@ export async function insertTopic(topic: Pick<Topic, "title">): Promise<Topic> {
 export async function incrementVotes(id: string): Promise<Question[]> {
   try {
     const data = await sql<Question>`
-      UPDATE questions SET votes = votes + 1 WHERE id = ${id}`;
+      UPDATE questions SET votes = votes + 1 WHERE id = ${id}
+      RETURNING *;
+    `;
     return data.rows;
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to increment votes.");
+  }
+}
+
+export async function acceptAnswer(answerId: string): Promise<void> {
+  try {
+    await sql`UPDATE answers SET accepted = true WHERE id = ${answerId}`;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to accept answer.");
   }
 }
