@@ -11,7 +11,9 @@ export async function PATCH(_: Request, { params }: Params) {
 
   try {
     // Get the question_id for the given answer
-    const result = await sql`SELECT question_id FROM answers WHERE id = ${answerId} LIMIT 1;`;
+    const result = await sql<{ question_id: string }>`
+      SELECT question_id FROM answers WHERE id = ${answerId} LIMIT 1;
+    `;
     const questionId = result.rows[0]?.question_id;
 
     if (!questionId) {
