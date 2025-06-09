@@ -1,10 +1,9 @@
-// components/AcceptAnswerButton.tsx
 'use client';
 
 import { Check } from 'lucide-react';
 
 interface AcceptAnswerButtonProps {
-  answerId: number;
+  answerId: string;
 }
 
 export default function AcceptAnswerButton({ answerId }: AcceptAnswerButtonProps) {

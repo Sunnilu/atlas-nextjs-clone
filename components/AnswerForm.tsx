@@ -4,7 +4,7 @@
 import { useState } from 'react';
 
 interface AnswerFormProps {
-  questionId: number;
+  questionId: string;
 }
 
 export default function AnswerForm({ questionId }: AnswerFormProps) {
