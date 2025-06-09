@@ -10,11 +10,12 @@ export async function POST(req: Request) {
 
   try {
     const client = await db.connect();
-    await client.sql`INSERT INTO topics (title) VALUES (${title})`;
-    return NextResponse.json({ message: 'Topic created' }, { status: 201 });
+    const result = await client.sql`INSERT INTO topics (title) VALUES (${title}) RETURNING id, title`;
+    client.release(); // 👈 Don't forget to release the connection
+
+    return NextResponse.json(result.rows[0], { status: 201 });
   } catch (error) {
     console.error('Error creating topic:', error);
     return NextResponse.json({ error: 'Failed to create topic' }, { status: 500 });
   }
 }
-
