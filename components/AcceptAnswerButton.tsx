@@ -1,12 +1,15 @@
 'use client';
 
 import { Check } from 'lucide-react';
+import { useRouter } from 'next/navigation'; // ✅ Import router
 
 interface AcceptAnswerButtonProps {
   answerId: string;
 }
 
 export default function AcceptAnswerButton({ answerId }: AcceptAnswerButtonProps) {
+  const router = useRouter(); // ✅ Hook usage
+
   const handleAccept = async () => {
     try {
       const res = await fetch(`/api/answers/${answerId}/accept`, {
@@ -14,7 +17,7 @@ export default function AcceptAnswerButton({ answerId }: AcceptAnswerButtonProps
       });
 
       if (res.ok) {
-        window.location.reload(); // Refresh to reflect accepted answer
+        router.refresh(); // ✅ Refresh the UI after accepting
       } else {
         console.error('Failed to accept answer');
       }
