@@ -115,3 +115,19 @@ export async function acceptAnswer(answerId: string): Promise<void> {
     throw new Error("Failed to accept answer.");
   }
 }
+
+export async function getQuestionWithAnswers(id: string): Promise<(Question & { answers: Answer[] }) | null> {
+  try {
+    const question = await fetchQuestionById(id);
+    if (!question) return null;
+
+    const answers = await fetchAnswersForQuestion(id);
+    return {
+      ...question,
+      answers,
+    };
+  } catch (error) {
+    console.error("Failed to get question with answers:", error);
+    return null;
+  }
+}
