@@ -1,7 +1,7 @@
-// components/AnswerForm.tsx
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation'; // ✅ Import router
 
 interface AnswerFormProps {
   questionId: string;
@@ -10,11 +10,11 @@ interface AnswerFormProps {
 export default function AnswerForm({ questionId }: AnswerFormProps) {
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
+  const router = useRouter(); // ✅ Hook usage
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!text.trim()) return;
-
     setLoading(true);
 
     try {
@@ -26,7 +26,7 @@ export default function AnswerForm({ questionId }: AnswerFormProps) {
 
       if (res.ok) {
         setText('');
-        window.location.reload(); // Refresh to show new answer
+        router.refresh(); // ✅ Smooth UI refresh
       } else {
         console.error('Failed to submit answer');
       }
