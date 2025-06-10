@@ -5,7 +5,8 @@ export default function NewTopicPage() {
   async function handleCreateTopic(formData: FormData) {
     'use server';
 
-    const topic = await createTopic(formData);
+    type Topic = { id: string } | null;
+    const topic: Topic = await createTopic(formData);
     if (!topic?.id) return;
     redirect(`/ui/topics/${topic.id}`);
   }
