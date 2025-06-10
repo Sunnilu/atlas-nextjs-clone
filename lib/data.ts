@@ -92,9 +92,9 @@ export async function insertQuestion(
   }
 }
 
-export async function insertTopic(topic: Pick<Topic, "title">): Promise<Topic> {
+export async function insertTopic(topic: Pick<Topic, "title">): Promise<{ id: string; title: string }> {
   try {
-    const data = await sql<Topic>`
+    const data = await sql<{ id: string; title: string }>`
       INSERT INTO topics (title)
       VALUES (${topic.title}) RETURNING id, title;
     `;
