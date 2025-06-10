@@ -1,4 +1,5 @@
-import { insertTopic } from '@/lib/actions';
+import { createTopic } from '@/lib/actions';
+
 import { redirect } from 'next/navigation';
 
 export default function NewTopicPage() {
