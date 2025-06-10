@@ -1,8 +1,7 @@
-// app/ui/page.tsx
 import Link from 'next/link';
 import { fetchTopics } from '@/lib/data';
 
-export default async function TopicsPage() {
+export default async function UIPage() {
   const topics = await fetchTopics();
 
   return (
