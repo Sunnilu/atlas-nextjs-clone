@@ -126,3 +126,19 @@ export async function acceptAnswer(answerId: string): Promise<void> {
     throw new Error("Failed to accept answer.");
   }
 }
+
+export async function insertAnswer(
+  answer: Pick<Answer, 'question_id' | 'text'>
+): Promise<Answer[]> {
+  try {
+    const result = await sql<Answer>`
+      INSERT INTO answers (question_id, text, accepted, created_at)
+      VALUES (${answer.question_id}, ${answer.text}, false, NOW())
+      RETURNING *;
+    `;
+    return result.rows;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to submit answer.");
+  }
+}
