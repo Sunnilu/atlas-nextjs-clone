@@ -1,3 +1,4 @@
+// app/ui/page.tsx
 import Link from 'next/link';
 import { fetchTopics } from '@/lib/data';
 
@@ -6,7 +7,7 @@ export default async function UIPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold mb-4 text-white">Topics</h1>
+      <h1 className="text-3xl font-bold mb-4 text-white">All Topics</h1>
       <div className="space-y-4">
         {topics.map((topic) => (
           <Link

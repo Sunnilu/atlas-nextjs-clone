@@ -1,6 +1,6 @@
+// app/ui/topics/[id]/page.tsx
 import Link from 'next/link';
 import { fetchTopic, fetchQuestions } from '@/lib/data';
-import { notFound } from 'next/navigation';
 
 interface Props {
   params: { id: string };
@@ -8,15 +8,12 @@ interface Props {
 
 export default async function TopicDetailPage({ params }: Props) {
   const { id } = params;
-
-  // UUID validation: simple check (optional but defensive)
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  if (!uuidRegex.test(id)) return notFound();
-
   const topic = await fetchTopic(id);
   const questions = await fetchQuestions(id);
 
-  if (!topic) return notFound();
+  if (!topic) {
+    return <div className="text-white p-6">Topic not found.</div>;
+  }
 
   return (
     <div className="p-6">
@@ -34,4 +31,4 @@ export default async function TopicDetailPage({ params }: Props) {
       </div>
     </div>
   );
-}
+} 
