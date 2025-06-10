@@ -1,10 +1,9 @@
-// lib/data.ts
 import { sql } from "@vercel/postgres";
 import { Question, Topic, User, Answer } from "./definitions";
 
 export async function fetchUser(email: string): Promise<User | undefined> {
   try {
-    const user = await sql<User>`SELECT * FROM users WHERE email=${email}`;
+    const user = await sql<User>`SELECT * FROM users WHERE email = ${email}`;
     return user.rows[0];
   } catch (error) {
     console.error("Failed to fetch user:", error);
@@ -24,7 +23,7 @@ export async function fetchUsers(): Promise<User[]> {
 
 export async function fetchTopics(): Promise<Topic[]> {
   try {
-    const data = await sql<Topic>`SELECT * FROM topics`;
+    const data = await sql<Topic>`SELECT * FROM topics ORDER BY created_at DESC;`;
     return data.rows;
   } catch (error) {
     console.error("Database Error:", error);
@@ -34,7 +33,7 @@ export async function fetchTopics(): Promise<Topic[]> {
 
 export async function fetchTopic(id: string): Promise<Topic | null> {
   try {
-    const data = await sql<Topic>`SELECT * FROM topics WHERE id = ${id}`;
+    const data = await sql<Topic>`SELECT * FROM topics WHERE id::uuid = ${id}`;
     return data.rows[0] || null;
   } catch (error) {
     console.error("Database Error:", error);
@@ -42,10 +41,11 @@ export async function fetchTopic(id: string): Promise<Topic | null> {
   }
 }
 
-export async function fetchQuestions(id: string): Promise<Question[]> {
+export async function fetchQuestions(topicId: string): Promise<Question[]> {
   try {
     const data = await sql<Question>`
-      SELECT * FROM questions WHERE topic_id = ${id} ORDER BY votes DESC`;
+      SELECT * FROM questions WHERE topic_id::uuid = ${topicId} ORDER BY votes DESC;
+    `;
     return data.rows;
   } catch (error) {
     console.error("Database Error:", error);
@@ -55,7 +55,7 @@ export async function fetchQuestions(id: string): Promise<Question[]> {
 
 export async function fetchQuestionById(id: string): Promise<Question | null> {
   try {
-    const result = await sql<Question>`SELECT * FROM questions WHERE id = ${id}`;
+    const result = await sql<Question>`SELECT * FROM questions WHERE id::uuid = ${id}`;
     return result.rows[0] || null;
   } catch (error) {
     console.error("Database Error:", error);
@@ -66,7 +66,7 @@ export async function fetchQuestionById(id: string): Promise<Question | null> {
 export async function fetchAnswersForQuestion(questionId: string): Promise<Answer[]> {
   try {
     const result = await sql<Answer>`
-      SELECT * FROM answers WHERE question_id = ${questionId}
+      SELECT * FROM answers WHERE question_id::uuid = ${questionId}
       ORDER BY accepted DESC, created_at ASC;
     `;
     return result.rows;
@@ -108,7 +108,7 @@ export async function insertTopic(topic: Pick<Topic, "title">): Promise<Topic> {
 export async function incrementVotes(id: string): Promise<Question[]> {
   try {
     const data = await sql<Question>`
-      UPDATE questions SET votes = votes + 1 WHERE id = ${id}
+      UPDATE questions SET votes = votes + 1 WHERE id::uuid = ${id}
       RETURNING *;
     `;
     return data.rows;
@@ -120,7 +120,7 @@ export async function incrementVotes(id: string): Promise<Question[]> {
 
 export async function acceptAnswer(answerId: string): Promise<void> {
   try {
-    await sql`UPDATE answers SET accepted = true WHERE id = ${answerId}`;
+    await sql`UPDATE answers SET accepted = true WHERE id::uuid = ${answerId}`;
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to accept answer.");
