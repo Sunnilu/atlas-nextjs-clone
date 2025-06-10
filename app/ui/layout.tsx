@@ -7,30 +7,30 @@ export default async function UILayout({ children }: { children: React.ReactNode
 
   return (
     <div className="flex min-h-screen">
-      <aside className="w-64 bg-[#00003C] text-white p-4 border-r border-black">
+      <aside className="w-64 bg-gray-100 p-4">
         <h2 className="text-xl font-bold mb-4">Topics</h2>
         <ul className="space-y-2">
           {topics.map((topic) => (
             <li key={topic.id}>
               <Link
                 href={`/ui/topics/${topic.id}`}
-                className="hover:underline block"
+                className="text-blue-600 hover:underline"
               >
                 {topic.title}
               </Link>
             </li>
           ))}
           <li>
-            <Link href="/ui/topics/new" className="text-green-300 hover:underline">
+            <Link href="/ui/topics/new" className="text-green-600 hover:underline">
               ➕ New Topic
             </Link>
           </li>
         </ul>
 
-        <form action="/api/logout" method="POST" className="mt-6">
+        <form action="/api/logout" method="POST">
           <button
             type="submit"
-            className="text-red-300 text-sm hover:underline"
+            className="mt-6 text-red-600 text-sm hover:underline"
           >
             🚪 Sign Out
           </button>
