@@ -1,7 +1,11 @@
 // lib/actions.ts
 'use server';
 
-import { insertTopic, insertAnswer, acceptAnswer as acceptAnswerQuery } from './data';
+import {
+  insertTopic,
+  insertAnswer,
+  acceptAnswer as updateAcceptedAnswer,
+} from './data';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
@@ -22,7 +26,7 @@ export async function createTopic(formData: FormData) {
 }
 
 /**
- * Server action to submit a new answer.
+ * Server action to submit a new answer to a question.
  * Called from the /ui/questions/[id] form.
  */
 export async function submitAnswer(formData: FormData) {
@@ -30,16 +34,16 @@ export async function submitAnswer(formData: FormData) {
   const questionId = formData.get('questionId')?.toString();
 
   if (!text || !questionId) {
-    throw new Error('Text and questionId are required');
+    throw new Error('Text and Question ID are required');
   }
 
-  await insertAnswer({ question_id: questionId, text });
+  await insertAnswer({ text, question_id: questionId });
   revalidatePath(`/ui/questions/${questionId}`);
 }
 
 /**
- * Server action to mark an answer as accepted.
- * Updates the question to reference the accepted answer.
+ * Server action to mark an answer as the accepted answer.
+ * This updates the answer in the question record.
  */
 export async function acceptAnswer(formData: FormData) {
   const answerId = formData.get('answerId')?.toString();
@@ -49,6 +53,6 @@ export async function acceptAnswer(formData: FormData) {
     throw new Error('Answer ID and Question ID are required');
   }
 
-  await acceptAnswerQuery(questionId, answerId);
+  await updateAcceptedAnswer(questionId, answerId);
   revalidatePath(`/ui/questions/${questionId}`);
 }
