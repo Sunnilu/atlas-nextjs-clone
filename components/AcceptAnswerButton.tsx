@@ -1,14 +1,15 @@
+// app/components/AcceptAnswerButton.tsx
 'use client';
 
 import { Check } from 'lucide-react';
-import { useRouter } from 'next/navigation'; // ✅ Import router
+import { useRouter } from 'next/navigation';
 
-interface AcceptAnswerButtonProps {
+interface AcceptAnswerProps {
   answerId: string;
 }
 
-export default function AcceptAnswerButton({ answerId }: AcceptAnswerButtonProps) {
-  const router = useRouter(); // ✅ Hook usage
+export default function AcceptAnswerButton({ answerId }: AcceptAnswerProps) {
+  const router = useRouter();
 
   const handleAccept = async () => {
     try {
@@ -17,7 +18,7 @@ export default function AcceptAnswerButton({ answerId }: AcceptAnswerButtonProps
       });
 
       if (res.ok) {
-        router.refresh(); // ✅ Refresh the UI after accepting
+        router.refresh();
       } else {
         console.error('Failed to accept answer');
       }
