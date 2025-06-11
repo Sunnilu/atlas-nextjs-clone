@@ -1,7 +1,43 @@
 // app/api/topics/[id]/questions/route.ts
 import { db } from '@vercel/postgres';
+import { fetchQuestions } from '@/lib/data';
 import { NextResponse } from 'next/server';
 
+interface Params {
+  params: { id: string };
+}
+
+// Handle GET: return all questions for a given topic
+export async function GET(req: Request, { params }: Params) {
+  const topicId = params.id;
+
+  if (!topicId) {
+    return NextResponse.json(
+      { error: 'Topic ID is required.' },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const questions = await fetchQuestions(topicId);
+    return NextResponse.json(
+      questions.map(({ id, title, topic_id, votes }) => ({
+        id,
+        title,
+        topic_id,
+        votes,
+      }))
+    );
+  } catch (error) {
+    console.error('❌ Failed to fetch questions:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch questions.' },
+      { status: 500 }
+    );
+  }
+}
+
+// Handle POST: create a new question for a topic
 export async function POST(
   req: Request,
   { params }: { params: { id: string } }

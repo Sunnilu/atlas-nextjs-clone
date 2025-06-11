@@ -1,12 +1,19 @@
-// ✅ app/api/topics/route.ts
-import { NextResponse } from 'next/server';
+// app/api/topics/route.ts
 import { fetchTopics } from '@/lib/data';
+import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
     const topics = await fetchTopics();
-    return NextResponse.json(topics.map(({ id, title }) => ({ id, title })));
+
+    return NextResponse.json(
+      topics.map(({ id, title }) => ({ id, title }))
+    );
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch topics' }, { status: 500 });
+    console.error('❌ Failed to fetch topics:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch topics.' },
+      { status: 500 }
+    );
   }
 }
