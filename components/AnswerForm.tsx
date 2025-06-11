@@ -20,7 +20,10 @@ export default function AnswerForm({ questionId }: AnswerFormProps) {
     }
 
     try {
-      await submitAnswer({ text, questionId });
+      const formData = new FormData();
+      formData.append('text', text);
+      formData.append('questionId', questionId);
+      await submitAnswer(formData);
       setText('');
     } catch (err) {
       setError('Failed to submit answer');
