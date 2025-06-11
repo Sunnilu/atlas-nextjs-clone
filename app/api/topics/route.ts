@@ -5,7 +5,7 @@ import { fetchTopics } from '@/lib/data';
 export async function GET() {
   try {
     const topics = await fetchTopics();
-    return NextResponse.json(topics);
+    return NextResponse.json(topics.map(({ id, title }) => ({ id, title })));
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch topics' }, { status: 500 });
   }
