@@ -1,7 +1,11 @@
 // lib/actions.ts
 'use server';
 
-import { insertTopic, insertAnswer } from './data';
+import {
+  insertTopic,
+  insertAnswer,
+  acceptAnswer as acceptAnswerQuery,
+} from './data';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
@@ -35,4 +39,13 @@ export async function submitAnswer(formData: FormData) {
 
   await insertAnswer({ question_id: questionId, text });
   revalidatePath(`/ui/questions/${questionId}`); // Refresh the answers list
+}
+
+/**
+ * Server action to accept an answer.
+ * Called from AcceptAnswerButton.
+ */
+export async function acceptAnswer(answerId: string) {
+  await acceptAnswerQuery(answerId);
+  revalidatePath('/ui/questions'); // Invalidate cache to update accepted answer display
 }
