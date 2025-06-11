@@ -1,6 +1,9 @@
+// lib/data.ts
+
 import { sql } from "@vercel/postgres";
 import { Question, Topic, User, Answer } from "./definitions";
 
+// Fetch a single user by email
 export async function fetchUser(email: string): Promise<User | undefined> {
   try {
     const user = await sql<User>`SELECT * FROM users WHERE email = ${email}`;
@@ -11,6 +14,7 @@ export async function fetchUser(email: string): Promise<User | undefined> {
   }
 }
 
+// Fetch all users
 export async function fetchUsers(): Promise<User[]> {
   try {
     const result = await sql<User>`SELECT * FROM users`;
@@ -21,6 +25,7 @@ export async function fetchUsers(): Promise<User[]> {
   }
 }
 
+// Fetch all topics
 export async function fetchTopics(): Promise<Topic[]> {
   try {
     const data = await sql<Topic>`SELECT * FROM topics ORDER BY id DESC`;
@@ -31,6 +36,7 @@ export async function fetchTopics(): Promise<Topic[]> {
   }
 }
 
+// Fetch a single topic by ID
 export async function fetchTopic(id: string): Promise<Topic | null> {
   try {
     const data = await sql<Topic>`SELECT * FROM topics WHERE id = ${id}`;
@@ -41,6 +47,7 @@ export async function fetchTopic(id: string): Promise<Topic | null> {
   }
 }
 
+// Fetch questions for a topic
 export async function fetchQuestions(topicId: string): Promise<Question[]> {
   try {
     const data = await sql<Question>`
@@ -53,6 +60,7 @@ export async function fetchQuestions(topicId: string): Promise<Question[]> {
   }
 }
 
+// Fetch a single question by ID
 export async function fetchQuestionById(id: string): Promise<Question | null> {
   try {
     const result = await sql<Question>`SELECT * FROM questions WHERE id = ${id}`;
@@ -63,6 +71,7 @@ export async function fetchQuestionById(id: string): Promise<Question | null> {
   }
 }
 
+// Fetch answers for a question
 export async function fetchAnswersForQuestion(questionId: string): Promise<Answer[]> {
   try {
     const result = await sql<Answer>`
@@ -76,6 +85,7 @@ export async function fetchAnswersForQuestion(questionId: string): Promise<Answe
   }
 }
 
+// Insert a new question
 export async function insertQuestion(
   question: Pick<Question, "title" | "topic_id" | "votes">
 ): Promise<Question[]> {
@@ -92,11 +102,15 @@ export async function insertQuestion(
   }
 }
 
-export async function insertTopic(topic: Pick<Topic, "title">): Promise<{ id: string; title: string }> {
+// Insert a new topic
+export async function insertTopic(
+  topic: Pick<Topic, "title">
+): Promise<{ id: string; title: string }> {
   try {
     const data = await sql<{ id: string; title: string }>`
       INSERT INTO topics (title)
-      VALUES (${topic.title}) RETURNING id, title;
+      VALUES (${topic.title})
+      RETURNING id, title;
     `;
     return data.rows[0];
   } catch (error) {
@@ -105,6 +119,7 @@ export async function insertTopic(topic: Pick<Topic, "title">): Promise<{ id: st
   }
 }
 
+// Increment question votes
 export async function incrementVotes(id: string): Promise<Question[]> {
   try {
     const data = await sql<Question>`
@@ -118,6 +133,7 @@ export async function incrementVotes(id: string): Promise<Question[]> {
   }
 }
 
+// Accept an answer
 export async function acceptAnswer(answerId: string): Promise<void> {
   try {
     await sql`UPDATE answers SET accepted = true WHERE id = ${answerId}`;
@@ -127,16 +143,17 @@ export async function acceptAnswer(answerId: string): Promise<void> {
   }
 }
 
+// Insert a new answer
 export async function insertAnswer(
-  answer: Pick<Answer, 'question_id' | 'text'>
-): Promise<Answer[]> {
+  answer: Pick<Answer, "question_id" | "text">
+): Promise<Answer> {
   try {
     const result = await sql<Answer>`
       INSERT INTO answers (question_id, text, accepted, created_at)
       VALUES (${answer.question_id}, ${answer.text}, false, NOW())
       RETURNING *;
     `;
-    return result.rows;
+    return result.rows[0]; // ✅ Return only the inserted answer
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to submit answer.");
