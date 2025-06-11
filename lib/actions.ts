@@ -1,11 +1,7 @@
 // lib/actions.ts
 'use server';
 
-import {
-  insertTopic,
-  insertAnswer,
-  acceptAnswer as acceptAnswerQuery,
-} from './data';
+import { insertTopic, insertAnswer, acceptAnswer as acceptAnswerQuery } from './data';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
@@ -21,8 +17,8 @@ export async function createTopic(formData: FormData) {
   }
 
   const topic = await insertTopic({ title });
-  revalidatePath('/ui'); // Refresh the topic list on sidebar and /ui
-  redirect(`/ui/topics/${topic.id}`); // Navigate to the new topic page
+  revalidatePath('/ui');
+  redirect(`/ui/topics/${topic.id}`);
 }
 
 /**
@@ -38,14 +34,21 @@ export async function submitAnswer(formData: FormData) {
   }
 
   await insertAnswer({ question_id: questionId, text });
-  revalidatePath(`/ui/questions/${questionId}`); // Refresh the answers list
+  revalidatePath(`/ui/questions/${questionId}`);
 }
 
 /**
- * Server action to accept an answer.
- * Called from AcceptAnswerButton.
+ * Server action to mark an answer as accepted.
+ * Updates the question to reference the accepted answer.
  */
-export async function acceptAnswer(answerId: string) {
-  await acceptAnswerQuery(answerId);
-  revalidatePath('/ui/questions'); // Invalidate cache to update accepted answer display
+export async function acceptAnswer(formData: FormData) {
+  const answerId = formData.get('answerId')?.toString();
+  const questionId = formData.get('questionId')?.toString();
+
+  if (!answerId || !questionId) {
+    throw new Error('Answer ID and Question ID are required');
+  }
+
+  await acceptAnswerQuery(questionId, answerId);
+  revalidatePath(`/ui/questions/${questionId}`);
 }

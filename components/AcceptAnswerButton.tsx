@@ -1,39 +1,41 @@
 // app/components/AcceptAnswerButton.tsx
 'use client';
 
-import { Check } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useFormStatus } from 'react-dom';
+import { acceptAnswer } from '@/lib/actions';
 
-interface AcceptAnswerProps {
+interface AcceptAnswerButtonProps {
   answerId: string;
+  questionId: string;
 }
 
-export default function AcceptAnswerButton({ answerId }: AcceptAnswerProps) {
-  const router = useRouter();
+function SubmitIcon() {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      title="Mark as accepted"
+      className="text-gray-500 hover:text-green-600 disabled:opacity-50"
+      disabled={pending}
+    >
+      ✔
+    </button>
+  );
+}
 
-  const handleAccept = async () => {
-    try {
-      const res = await fetch(`/api/answers/${answerId}/accept`, {
-        method: 'PATCH',
-      });
-
-      if (res.ok) {
-        router.refresh();
-      } else {
-        console.error('Failed to accept answer');
-      }
-    } catch (err) {
-      console.error('Error accepting answer:', err);
-    }
+export default function AcceptAnswerButton({
+  answerId,
+  questionId,
+}: AcceptAnswerButtonProps) {
+  const handleAccept = async (formData: FormData) => {
+    formData.set('answerId', answerId);
+    formData.set('questionId', questionId);
+    await acceptAnswer(formData);
   };
 
   return (
-    <button
-      onClick={handleAccept}
-      title="Mark as accepted"
-      className="text-gray-500 hover:text-green-600"
-    >
-      <Check />
-    </button>
+    <form action={handleAccept}>
+      <SubmitIcon />
+    </form>
   );
 }
