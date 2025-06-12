@@ -1,48 +1,28 @@
-'use client';
-
-import { useSession, signOut } from 'next-auth/react';
+// components/LoggedInUser.tsx
+// Update the import path below to the correct relative path where your auth module is located.
+// For example, if your auth file is at 'lib/auth.ts', use:
+import { auth } from '../lib/auth';
+// Or adjust the path as needed for your project structure.
 import Image from 'next/image';
 
-export default function LoggedInUser() {
-  const { data: session } = useSession();
+export default async function LoggedInUser() {
+  const session = await auth();
 
   if (!session?.user) return null;
 
+  const { name, image } = session.user;
+  const avatarUrl = image || 'https://via.placeholder.com/40';
+
   return (
-    <div className="flex flex-col space-y-2 p-3">
-      {/* Create Topic */}
-      <a
-        href="/ui/topics/new"
-        className="flex items-center gap-3 bg-white text-[#00003C] rounded-xl px-4 py-3 shadow hover:bg-gray-100 transition"
-      >
-        <span className="text-2xl">➕</span>
-        <span className="font-medium text-lg">Create Topic</span>
-      </a>
-
-      {/* Logged-in User */}
-      <div className="flex items-center gap-3 bg-white text-[#00003C] rounded-xl px-4 py-3 shadow">
-        {session.user.image ? (
-          <Image
-            src={session.user.image}
-            alt={session.user.name || 'User'}
-            width={32}
-            height={32}
-            className="rounded-full"
-          />
-        ) : (
-          <div className="w-8 h-8 rounded-full bg-gray-300" />
-        )}
-        <span className="font-medium text-lg">{session.user.name}</span>
-      </div>
-
-      {/* Sign Out */}
-      <button
-        onClick={() => signOut({ callbackUrl: '/' })}
-        className="flex items-center gap-3 bg-white text-[#00003C] rounded-xl px-4 py-3 shadow hover:bg-gray-100 transition"
-      >
-        <span className="text-2xl">⏻</span>
-        <span className="font-medium text-lg">Sign Out</span>
-      </button>
+    <div className="flex items-center space-x-2 p-3">
+      <Image
+        src={avatarUrl}
+        alt="User avatar"
+        width={32}
+        height={32}
+        className="rounded-full"
+      />
+      <span className="text-white text-sm">{name ?? 'Anonymous'}</span>
     </div>
   );
 }
