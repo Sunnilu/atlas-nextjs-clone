@@ -20,7 +20,8 @@
       "lib/*": ["lib/*"],
       "components/*": ["components/*"],
       "hooks/*": ["hooks/*"],
-      "styles/*": ["styles/*"]
+      "styles/*": ["styles/*"],
+       "typeRoots": ["./types", "./node_modules/@types"]
     },
     "plugins": [
       {
