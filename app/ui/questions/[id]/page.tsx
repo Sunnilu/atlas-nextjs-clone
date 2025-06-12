@@ -1,5 +1,3 @@
-// app/ui/questions/[id]/page.tsx
-
 import { fetchQuestionById, fetchAnswersForQuestion } from '@/lib/data';
 import AnswerForm from '@/components/AnswerForm';
 import AcceptAnswerButton from '@/components/AcceptAnswerButton';
@@ -46,7 +44,7 @@ export default async function QuestionPage({ params }: Props) {
             className="bg-[#00003C] border border-black p-5 text-white rounded flex justify-between items-center"
           >
             <p>{a.text}</p>
-            <AcceptAnswerButton answerId={a.id} />
+            <AcceptAnswerButton answerId={a.id} questionId={question.id} />
           </div>
         ))}
       </div>
