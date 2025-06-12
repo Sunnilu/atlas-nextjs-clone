@@ -11,8 +11,9 @@ export const authConfig: NextAuthConfig = {
   ],
   callbacks: {
     async session({ session, token }) {
-      // @ts-expect-error - token.sub is guaranteed to exist
-      session.user.id = token.sub;
+      if (token.sub) {
+        session.user.id = token.sub;
+      }
       return session;
     },
   },
