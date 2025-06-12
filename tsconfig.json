@@ -22,8 +22,7 @@
       "hooks/*": ["hooks/*"],
       "styles/*": ["styles/*"]
     },
-    "typeRoots": ["./types", "./node_modules/@types"],
-    "types": ["next-auth"],
+    "types": ["next-auth", "next-auth/jwt"],
     "plugins": [
       {
         "name": "next"
@@ -34,8 +33,8 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "lib/**/*",
     "types/**/*",
+    "lib/**/*",
     "scripts/seed.js",
     ".next/types/**/*.ts"
   ],
