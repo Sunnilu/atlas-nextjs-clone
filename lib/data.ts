@@ -1,7 +1,7 @@
 // lib/data.ts
 
-import { sql } from "@vercel/postgres";
-import { Question, Topic, User, Answer } from "./definitions";
+import { sql } from '@vercel/postgres';
+import { Question, Topic, User, Answer } from './definitions';
 
 // Fetch a single user by email
 export async function fetchUser(email: string): Promise<User | undefined> {
@@ -9,8 +9,8 @@ export async function fetchUser(email: string): Promise<User | undefined> {
     const user = await sql<User>`SELECT * FROM users WHERE email = ${email}`;
     return user.rows[0];
   } catch (error) {
-    console.error("Failed to fetch user:", error);
-    throw new Error("Failed to fetch user.");
+    console.error('Failed to fetch user:', error);
+    throw new Error('Failed to fetch user.');
   }
 }
 
@@ -20,7 +20,7 @@ export async function fetchUsers(): Promise<User[]> {
     const result = await sql<User>`SELECT * FROM users`;
     return result.rows;
   } catch (error) {
-    console.error("Database Error:", error);
+    console.error('Database Error:', error);
     return [];
   }
 }
@@ -31,8 +31,8 @@ export async function fetchTopics(): Promise<Topic[]> {
     const data = await sql<Topic>`SELECT * FROM topics ORDER BY id DESC`;
     return data.rows;
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch topics.");
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch topics.');
   }
 }
 
@@ -42,8 +42,8 @@ export async function fetchTopic(id: string): Promise<Topic | null> {
     const data = await sql<Topic>`SELECT * FROM topics WHERE id = ${id}`;
     return data.rows[0] || null;
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch topic.");
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch topic.');
   }
 }
 
@@ -55,8 +55,8 @@ export async function fetchQuestions(topicId: string): Promise<Question[]> {
     `;
     return data.rows;
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch questions.");
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch questions.');
   }
 }
 
@@ -66,7 +66,7 @@ export async function fetchQuestionById(id: string): Promise<Question | null> {
     const result = await sql<Question>`SELECT * FROM questions WHERE id = ${id}`;
     return result.rows[0] || null;
   } catch (error) {
-    console.error("Database Error:", error);
+    console.error('Database Error:', error);
     return null;
   }
 }
@@ -80,14 +80,14 @@ export async function fetchAnswersForQuestion(questionId: string): Promise<Answe
     `;
     return result.rows;
   } catch (error) {
-    console.error("Database Error:", error);
+    console.error('Database Error:', error);
     return [];
   }
 }
 
 // Insert a new question
 export async function insertQuestion(
-  question: Pick<Question, "title" | "topic_id" | "votes">
+  question: Pick<Question, 'title' | 'topic_id' | 'votes'>
 ): Promise<Question[]> {
   try {
     const data = await sql<Question>`
@@ -97,14 +97,14 @@ export async function insertQuestion(
     `;
     return data.rows;
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to add question.");
+    console.error('Database Error:', error);
+    throw new Error('Failed to add question.');
   }
 }
 
 // Insert a new topic
 export async function insertTopic(
-  topic: Pick<Topic, "title">
+  topic: Pick<Topic, 'title'>
 ): Promise<{ id: string; title: string }> {
   try {
     const data = await sql<{ id: string; title: string }>`
@@ -114,8 +114,8 @@ export async function insertTopic(
     `;
     return data.rows[0];
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to add topic.");
+    console.error('Database Error:', error);
+    throw new Error('Failed to add topic.');
   }
 }
 
@@ -128,24 +128,28 @@ export async function incrementVotes(id: string): Promise<Question[]> {
     `;
     return data.rows;
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to increment votes.");
+    console.error('Database Error:', error);
+    throw new Error('Failed to increment votes.');
   }
 }
 
-// Accept an answer
-export async function acceptAnswer(answerId: string): Promise<void> {
+// Accept an answer — update the question’s answer_id field
+export async function acceptAnswer(questionId: string, answerId: string): Promise<void> {
   try {
-    await sql`UPDATE answers SET accepted = true WHERE id = ${answerId}`;
+    await sql`
+      UPDATE questions
+      SET answer_id = ${answerId}
+      WHERE id = ${questionId};
+    `;
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to accept answer.");
+    console.error('Database Error:', error);
+    throw new Error('Failed to mark accepted answer.');
   }
 }
 
 // Insert a new answer
 export async function insertAnswer(
-  answer: Pick<Answer, "question_id" | "text">
+  answer: Pick<Answer, 'question_id' | 'text'>
 ): Promise<Answer> {
   try {
     const result = await sql<Answer>`
@@ -153,9 +157,9 @@ export async function insertAnswer(
       VALUES (${answer.question_id}, ${answer.text}, false, NOW())
       RETURNING *;
     `;
-    return result.rows[0]; // ✅ Return only the inserted answer
+    return result.rows[0];
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to submit answer.");
+    console.error('Database Error:', error);
+    throw new Error('Failed to submit answer.');
   }
 }
