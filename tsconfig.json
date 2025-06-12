@@ -20,9 +20,10 @@
       "lib/*": ["lib/*"],
       "components/*": ["components/*"],
       "hooks/*": ["hooks/*"],
-      "styles/*": ["styles/*"],
-       "typeRoots": ["./types", "./node_modules/@types"]
+      "styles/*": ["styles/*"]
     },
+    "typeRoots": ["./types", "./node_modules/@types"],
+    "types": ["next-auth"],
     "plugins": [
       {
         "name": "next"
@@ -34,6 +35,7 @@
     "**/*.ts",
     "**/*.tsx",
     "lib/**/*",
+    "types/**/*",
     "scripts/seed.js",
     ".next/types/**/*.ts"
   ],
