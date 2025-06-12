@@ -12,7 +12,9 @@ export const authConfig: NextAuthConfig = {
   callbacks: {
     async session({ session, token }) {
       if (token.sub) {
-        session.user.id = token.sub;
+        session.user.id = token.sub; // ✅ Only assign if defined
+      } else {
+        session.user.id = ''; // Or throw an error if you prefer
       }
       return session;
     },
